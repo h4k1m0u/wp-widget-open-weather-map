@@ -11,7 +11,8 @@ Author URI: http://author.url
 // helloworld widget class
 class Open_Weather_Map_Widget extends WP_Widget {
     public function __construct() {
-        // widget actual process
+        // init widget
+        wp_enqueue_style('open-weather-map.css', plugins_url('css/open-weather-map.css', __FILE__));
         parent::WP_Widget(
             'open-weather-map',
             'Open Weather Map', 
@@ -48,12 +49,26 @@ class Open_Weather_Map_Widget extends WP_Widget {
         $body = json_decode($resp['body']);
 
         // values retreived
+        $region = $body->name;
         $message = $body->weather[0]->description;
+        $icon = $body->weather[0]->icon;
         $temperature = $body->main->temp;
         $humidity = $body->main->humidity;
-        echo $message . '<br>';
-        echo $temperature . '<br>';
-        echo $humidity . '<br>';
+        $wind = $body->wind->speed;
+        ?>
+        <aside id="weather" class="widget widget_weather">
+            <h1 class="widget-title"><?php echo $region; ?> Weather forecast</h1>
+            <div>
+                <h2 class="weather-message"><?php echo $message; ?></h2>
+                <img src="http://openweathermap.org/img/w/<?php echo $icon; ?>.png" alt="<?php echo $message; ?>" />
+                <ul>
+                    <li>Temperature: <?php echo $temperature; ?></li>
+                    <li>Humidity: <?php echo $humidity; ?></li>
+                    <li>Wind: <?php echo $wind; ?></li>
+                </ul>
+            </div>
+        </aside>
+        <?php
     }
 }
 
