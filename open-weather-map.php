@@ -46,26 +46,32 @@ class Open_Weather_Map_Widget extends WP_Widget {
         // Outputs the content of the widget
         $city = $instance['city'];
         $resp = wp_remote_get("http://api.openweathermap.org/data/2.5/weather?q=$city&units=metric");
-        $body = json_decode($resp['body']);
-
-        // values retreived
-        $region = $body->name;
-        $message = $body->weather[0]->description;
-        $icon = $body->weather[0]->icon;
-        $temperature = $body->main->temp;
-        $humidity = $body->main->humidity;
-        $wind = $body->wind->speed;
         ?>
         <aside id="weather" class="widget widget_weather">
-            <h1 class="widget-title"><?php echo $region; ?> Weather forecast</h1>
+            <h1 class="widget-title"><?php echo $city; ?> Weather forecast</h1>
             <div>
-                <h2 class="weather-message"><?php echo $message; ?></h2>
-                <img src="http://openweathermap.org/img/w/<?php echo $icon; ?>.png" alt="<?php echo $message; ?>" />
-                <ul>
-                    <li>Temperature: <?php echo $temperature; ?></li>
-                    <li>Humidity: <?php echo $humidity; ?></li>
-                    <li>Wind: <?php echo $wind; ?></li>
-                </ul>
+                <?php if (!is_wp_error($resp)) { ?>
+                    <?php
+                        // values retreived
+                        $body = json_decode($resp['body']);
+                        $region = $body->name;
+                        $message = $body->weather[0]->description;
+                        $icon = $body->weather[0]->icon;
+                        $temperature = $body->main->temp;
+                        $humidity = $body->main->humidity;
+                        $wind = $body->wind->speed;
+
+                    ?>
+                    <h2 class="weather-message"><?php echo $message; ?></h2>
+                    <img src="http://openweathermap.org/img/w/<?php echo $icon; ?>.png" alt="<?php echo $message; ?>" />
+                    <ul>
+                        <li>Temperature: <?php echo $temperature; ?></li>
+                        <li>Humidity: <?php echo $humidity; ?></li>
+                        <li>Wind: <?php echo $wind; ?></li>
+                    </ul>
+                <?php } else { ?>
+                    <?php echo $resp->get_error_message(); ?>
+                <?php } ?>
             </div>
         </aside>
         <?php
